@@ -1,2 +1,2 @@
 # github-runners
-GitHub actions runners
+GitHub actions runners for Unix-like systems

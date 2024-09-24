@@ -11,7 +11,7 @@ arm64)
 arm)
     architecture="arm";;
 *)
-    echo "Unsupported architecture: $unamem"
+    log "Unsupported architecture: $unamem"
     exit 1
     ;;
 esac
@@ -28,9 +28,9 @@ elif [[ $unameu == *WIN* || $unameu == MSYS* ]]; then
     os_name="windows"
     binary="win-$architecture"
 else
-    echo "Unsupported OS: $(uname)"
+    log "Unsupported OS: $(uname)"
     exit 1
 fi
-export ARCHITECTURE="${architecture}"
-export OPERATING_SYSTEM="${os_name}"
-export TARGET_BIN="${binary}"
+ARCHITECTURE="${architecture}"
+OPERATING_SYSTEM="${os_name}"
+TARGET_BIN="${binary}"

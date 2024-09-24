@@ -3,10 +3,9 @@
 # This is the opposite of the default shell behaviour, which is to ignore errors in scripts.
 set -e
 
-# todo: Add notification options (ntfy and telegram)
 # todo: Update readme with env vars and usage
 
-RELEASE_URL="https://github.com/actions/runner/releases"
+export RELEASE_URL="https://github.com/actions/runner/releases"
 
 # Get current directory
 current_dir="$(dirname "$(realpath "$0")")"
@@ -21,31 +20,31 @@ if [ -f "${current_dir}/.env.sh" ]; then
 fi
 export ACTIONS_DIR="${ACTIONS_DIR:-${current_dir}/actions-runner}"
 
-# Functions for repo_level_runner and org_level_runner
-source "${current_dir}/config.sh"
+# Script for all GitHub related functions
+source "${current_dir}/github.sh"
 
 # Sets OPERATING_SYSTEM, ARCHITECTURE, TARGET_BIN
 source "${current_dir}/detector.sh"
 
+# Script for all notification related functions
+source "${current_dir}/notify.sh"
+
 # Default runner version is the latest release set by squire.sh
-RUNNER_VERSION="${RUNNER_VERSION:-"$(latest_release_version)"}"
+export RUNNER_VERSION="${RUNNER_VERSION:-"$(latest_release_version)"}"
 
-# Navigate to ACTIONS_DIR directory, download and extract the runner
-log "Downloading artifact [v${RUNNER_VERSION}] to '${ACTIONS_DIR}'"
-
-mkdir -p "${ACTIONS_DIR}" && cd "${ACTIONS_DIR}" \
-&& curl -O -sL "${RELEASE_URL}/download/v${RUNNER_VERSION}/actions-runner-${TARGET_BIN}-${RUNNER_VERSION}.tar.gz" \
-&& tar xzf "./actions-runner-${TARGET_BIN}-${RUNNER_VERSION}.tar.gz"
+# Download artifact
+download_artifact
 
 # Load env vars or set default values for RUNNER_NAME, RUNNER_GROUP, WORK_DIR and LABELS
 RUNNER_NAME="${RUNNER_NAME:-"$(instance_id)"}"
 RUNNER_GROUP="${RUNNER_GROUP:-"default"}"
 WORK_DIR="${WORK_DIR:-"_work"}"
 LABELS="${LABELS:-"${OPERATING_SYSTEM}-${ARCHITECTURE}"}"
+REUSE_EXISTING="${REUSE_EXISTING:-"false"}"
 
 # ************************************************ #
 filler
-prints=("Runner OS: '${OPERATING_SYSTEM}'" "Runner Architecture: '${ARCHITECTURE}'" "Runner Name: '${RUNNER_NAME}'" "Labels: '${LABELS}'")
+prints=("Runner OS: '${OPERATING_SYSTEM}'" "Runner Architecture: '${ARCHITECTURE}'" "Runner Name: '${RUNNER_NAME}'" "Labels: '${LABELS}'" "Reuse flag: '${REUSE_EXISTING}'")
 width=$(tput cols)
 for print in "${prints[@]}"; do
     len=${#print}
@@ -56,14 +55,34 @@ filler
 echo ""
 # ************************************************ #
 
-# Create a repository level self-hosted runner or an organization level self-hosted runner
-if [[ -n "$GIT_REPOSITORY" ]]; then
-	log "Creating a repository level self-hosted runner ['${RUNNER_NAME}'] for ${GIT_REPOSITORY}"
-	repo_level_runner
+if [[ -d "${ACTIONS_DIR}" ]] &&
+   [[ -f "${ACTIONS_DIR}/.credentials" ]] &&
+   [[ -f "${ACTIONS_DIR}/.credentials_rsaparams" ]] &&
+   [[ -f "${ACTIONS_DIR}/config.sh" ]] &&
+   [[ -f "${ACTIONS_DIR}/run.sh" ]]; then
+     if [[ "$REUSE_EXISTING" == "true" || "$REUSE_EXISTING" == "1" ]]; then
+        log "Existing configuration found. Re-using it..."
+        reused="reusing existing configuration"
+        cd "${ACTIONS_DIR}" || exit 1
+     else
+        filler
+        log "WARNING::Runner cannot start due to existing configuration present!!"
+        log "WARNING::Please cleanup existing '${ACTIONS_DIR}' manually or set 'REUSE_EXISTING=true'"
+        filler
+     fi
 else
-	log "Creating an organization level self-hosted runner '${RUNNER_NAME}'"
-	org_level_runner
+  if [[ -n "$GIT_REPOSITORY" ]]; then
+    log "Creating a repository level self-hosted runner ['${RUNNER_NAME}'] for ${GIT_REPOSITORY}"
+    repo_level_runner
+  else
+    log "Creating an organization level self-hosted runner '${RUNNER_NAME}'"
+    org_level_runner
+  fi
+  reused="creating a new configuration"
 fi
+
+ntfy_fn "Starting GitHub actions runner: '${RUNNER_NAME}' with ${reused}" &
+telegram_fn "Starting GitHub actions runner: '${RUNNER_NAME}' with ${reused}" &
 
 # todo: restarts - fix with different exit code
 # Cleanup and exit
