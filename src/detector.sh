@@ -2,7 +2,6 @@
 
 # NOTE: `uname -m` is more accurate and universal than `arch`
 # See https://en.wikipedia.org/wiki/Uname
-# todo: check filebrowser or ask GPT about this
 unamem="$(uname -m)"
 case $unamem in
 x86_64|amd64)

@@ -15,3 +15,15 @@ cleanup() {
   log "Removing runner..."
   ./config.sh remove --token "${REG_TOKEN}"
 }
+
+latest_release_version() {
+  version=$(curl -s https://api.github.com/repos/actions/runner/releases/latest | jq -r .tag_name)
+  refined="${version#v}"
+  echo "$refined"
+}
+
+filler() {
+	for ((j=0; j<$(tput cols); j++)); do
+		printf '*'
+	done
+}

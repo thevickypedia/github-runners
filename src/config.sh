@@ -7,7 +7,7 @@ repo_level_runner() {
         -H "Authorization: Bearer ${GIT_TOKEN}" \
         "https://api.github.com/repos/${GIT_OWNER}/${GIT_REPOSITORY}/actions/runners/registration-token" \
         | jq .token --raw-output)
-    cd "$SOURCE_DIR" || exit 1
+    cd "$ACTIONS_DIR" || exit 1
     ./config.sh --unattended \
         --work "${WORK_DIR}" \
         --labels "${LABELS}" \
@@ -26,7 +26,7 @@ org_level_runner() {
         -H "Authorization: Bearer ${GIT_TOKEN}" \
         "https://api.github.com/orgs/${GIT_OWNER}/actions/runners/registration-token" \
         | jq .token --raw-output)
-    cd "$SOURCE_DIR" || exit 1
+    cd "$ACTIONS_DIR" || exit 1
     ./config.sh \
         --work "${WORK_DIR}" \
         --labels "${LABELS}" \
