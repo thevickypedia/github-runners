@@ -88,6 +88,14 @@ export CHAT_ID=$(curl -s "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getU
 
 </details>
 
+## License & copyright
+
+&copy; Vignesh Rao
+
+Licensed under the [MIT License][license]
+
+[actions/runner]: https://github.com/actions/runner/releases
+[license]: https://github.com/thevickypedia/github-runners/blob/main/LICENSE
 [ntfy]: https://ntfy.sh/
 [telegram bot]: https://core.telegram.org/bots/api
 [ntfy-setup-basic]: https://docs.ntfy.sh/install/
