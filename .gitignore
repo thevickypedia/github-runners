@@ -2,5 +2,5 @@
 .vscode/
 .DS_Store/
 
-.env.sh
+.env
 actions-runner/

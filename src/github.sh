@@ -2,10 +2,10 @@
 
 download_artifact() {
   # Navigate to ACTIONS_DIR directory, download and extract the runner
-  log "Downloading artifact [v${RUNNER_VERSION}] to '${ACTIONS_DIR}'"
+  log "Downloading artifact [v${ARTIFACT_VERSION}] to '${ACTIONS_DIR}'"
   mkdir -p "${ACTIONS_DIR}" && cd "${ACTIONS_DIR}" \
-  && curl -O -sL "${RELEASE_URL}/download/v${RUNNER_VERSION}/actions-runner-${TARGET_BIN}-${RUNNER_VERSION}.tar.gz" \
-  && tar xzf "./actions-runner-${TARGET_BIN}-${RUNNER_VERSION}.tar.gz"
+  && curl -O -sL "${RELEASE_URL}/download/v${ARTIFACT_VERSION}/actions-runner-${TARGET_BIN}-${ARTIFACT_VERSION}.tar.gz" \
+  && tar xzf "./actions-runner-${TARGET_BIN}-${ARTIFACT_VERSION}.tar.gz"
 }
 
 cleanup() {
@@ -14,6 +14,8 @@ cleanup() {
   ntfy_fn "Removing runner: '${RUNNER_NAME}'"
   telegram_fn "Removing runner: '${RUNNER_NAME}'"
   ./config.sh remove --token "${REG_TOKEN}"
+	# Kill all background jobs started by the script
+	kill 0 2>/dev/null || true
 }
 
 repo_level_runner() {

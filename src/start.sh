@@ -3,20 +3,23 @@
 # This is the opposite of the default shell behaviour, which is to ignore errors in scripts.
 set -e
 
-# todo: Update readme with env vars and usage
-
 export RELEASE_URL="https://github.com/actions/runner/releases"
 
-# Get current directory
+# Get current and working directory
 current_dir="$(dirname "$(realpath "$0")")"
+working_dir="$(pwd)"
 
 # Functions for log, instance_id, latest_release_version and cleanup
 source "${current_dir}/squire.sh"
 
-# Source .env.sh file
-if [ -f "${current_dir}/.env.sh" ]; then
-	log "Sourcing .env.sh"
-	source "${current_dir}/.env.sh"
+# Source env_file file
+ENV_FILE="${env_file:-${working_dir}/.env}"
+
+if [ -f "${ENV_FILE}" ]; then
+	log "Sourcing ${ENV_FILE}"
+	# ShellCheck directive to ignore non-constant source
+	# shellcheck source=${working_dir}/.env
+	source "${ENV_FILE}"
 fi
 export ACTIONS_DIR="${ACTIONS_DIR:-${current_dir}/actions-runner}"
 
@@ -30,7 +33,7 @@ source "${current_dir}/detector.sh"
 source "${current_dir}/notify.sh"
 
 # Default runner version is the latest release set by squire.sh
-export RUNNER_VERSION="${RUNNER_VERSION:-"$(latest_release_version)"}"
+export ARTIFACT_VERSION="${ARTIFACT_VERSION:-"$(latest_release_version)"}"
 
 # Download artifact
 download_artifact
@@ -84,7 +87,6 @@ fi
 ntfy_fn "Starting GitHub actions runner: '${RUNNER_NAME}' with ${reused}" &
 telegram_fn "Starting GitHub actions runner: '${RUNNER_NAME}' with ${reused}" &
 
-# todo: restarts - fix with different exit code
 # Cleanup and exit
 trap 'cleanup; exit 130' INT
 trap 'cleanup; exit 143' TERM
