@@ -4,3 +4,5 @@
 
 .env
 actions-runner/
+actions/
+logs/
