@@ -1,6 +1,31 @@
 # GitHub Runner (non-dockerized)
 Spin up an on-demand self-hosted GitHub action runner on any Unix like operating system.
 
+## Prerequisites
+<details>
+<summary><strong>macOS</strong></summary>
+
+```shell
+brew install jq curl coreutils
+```
+
+- [Homebrew](https://brew.sh/)
+- [jq](https://formulae.brew.sh/formula/jq)
+- [curl](https://formulae.brew.sh/formula/curl)
+- [coreutils](https://formulae.brew.sh/formula/coreutils)
+</details>
+
+<details>
+<summary><strong>Linux</strong></summary>
+
+```shell
+sudo apt-get install curl jq
+```
+
+- [jq](https://jqlang.github.io/jq/download/)
+- [curl](https://curl.se/download.html)
+</details>
+
 ### Environment Variables
 
 - **ARTIFACT_VERSION** - Runner version. Uses the latest version from [actions/runner].
@@ -11,13 +36,13 @@ Spin up an on-demand self-hosted GitHub action runner on any Unix like operating
 - **RUNNER_GROUP** - Runner group. Uses `default`
 - **RUNNER_NAME** - Runner name. Uses a random instance ID.
 - **WORK_DIR** - Work directory. Uses `_work`
-- **LABELS** - Runner labels (comma separated). Uses `"docker-node,${os_name}-${architecture}"`
+- **LABELS** - Runner labels (comma separated). Uses `"${os_name}-${architecture}"`
 - **REUSE_EXISTING** - Re-use existing configuration. Defaults to `false`
 
 > [!NOTE]
 > 
-> `REUSE_EXISTING` flag can be useful when a container restarts due to an issue or
-> when a container is reused after being terminated without shutting down gracefully.
+> `REUSE_EXISTING` flag can be useful when the script stops due to an issue or
+> when the same config is reused after being terminated without shutting down gracefully.
 > <details>
 > <summary><strong>More info</strong></summary>
 >
@@ -42,7 +67,7 @@ Spin up an on-demand self-hosted GitHub action runner on any Unix like operating
 
 > [!WARNING]
 > 
-> Using this image **without** the env var `GIT_REPOSITORY` will create an organization level runner.<br>
+> Using this script **without** the env var `GIT_REPOSITORY` will create an organization level runner.<br>
 > Using self-hosted runners in public repositories pose some considerable security threats.
 > - [#self-hosted-runner-security]
 > - [#restricting-the-use-of-self-hosted-runners]

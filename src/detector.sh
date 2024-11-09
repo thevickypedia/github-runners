@@ -31,6 +31,6 @@ else
     log "Unsupported OS: $(uname)"
     exit 1
 fi
-ARCHITECTURE="${architecture}"
-OPERATING_SYSTEM="${os_name}"
-TARGET_BIN="${binary}"
+export ARCHITECTURE="${architecture}"
+export OPERATING_SYSTEM="${os_name}"
+export TARGET_BIN="${binary}"

@@ -31,7 +31,7 @@ mkdir -p actions
 # Define cleanup function to handle interruptions
 cleanup() {
     echo "Interrupt received, stopping all runners..."
-    kill $(jobs -p) 2>/dev/null
+    kill "$(jobs -p)" 2>/dev/null
     wait
     echo "All runners stopped."
     exit 1

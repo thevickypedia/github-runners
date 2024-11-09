@@ -1,6 +1,6 @@
 #!/bin/bash
 
-NOTIFICATION_TITLE="GitHub Actions Runner - Docker Node"
+NOTIFICATION_TITLE="GitHub Actions Runner - ${OPERATING_SYSTEM}-${ARCHITECTURE}"
 
 ntfy_fn() {
   # Send NTFY notification
