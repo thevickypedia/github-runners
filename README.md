@@ -1,31 +1,6 @@
 # GitHub Runner (non-dockerized)
 Spin up an on-demand self-hosted GitHub action runner on any Unix like operating system.
 
-## Prerequisites
-<details>
-<summary><strong>macOS</strong></summary>
-
-```shell
-brew install jq curl coreutils
-```
-
-- [Homebrew](https://brew.sh/)
-- [jq](https://formulae.brew.sh/formula/jq)
-- [curl](https://formulae.brew.sh/formula/curl)
-- [coreutils](https://formulae.brew.sh/formula/coreutils)
-</details>
-
-<details>
-<summary><strong>Linux</strong></summary>
-
-```shell
-sudo apt-get install curl jq
-```
-
-- [jq](https://jqlang.github.io/jq/download/)
-- [curl](https://curl.se/download.html)
-</details>
-
 ### Environment Variables
 
 - **ARTIFACT_VERSION** - Runner version. Uses the latest version from [actions/runner].

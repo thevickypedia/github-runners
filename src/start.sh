@@ -29,6 +29,9 @@ source "${current_dir}/github.sh"
 # Sets OPERATING_SYSTEM, ARCHITECTURE, TARGET_BIN
 source "${current_dir}/detector.sh"
 
+# Install the requirements
+source "${current_dir}/prerequisite.sh"
+
 # Script for all notification related functions
 source "${current_dir}/notify.sh"
 
