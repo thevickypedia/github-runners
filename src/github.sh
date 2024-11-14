@@ -8,15 +8,13 @@ download_artifact() {
   tar xzf "./actions-runner-${TARGET_BIN}-${ARTIFACT_VERSION}.${EXTENSION}"
 }
 
-# todo: runs in a never ending loop due to traps
+# todo: GH background tasks still keeps triggering after the start script finishes
 cleanup() {
   # Sends notification (when env vars are set) and removes the runner from local and GitHub
   log "Removing runner..."
   ntfy_fn "Removing runner: '${RUNNER_NAME}'"
   telegram_fn "Removing runner: '${RUNNER_NAME}'"
   "./${CONFIG_SCRIPT}" remove --token "${REG_TOKEN}"
-	# Kill all background jobs started by the script
-	kill 0 2>/dev/null || true
 }
 
 repo_level_runner() {

@@ -91,8 +91,8 @@ ntfy_fn "Starting GitHub actions runner: '${RUNNER_NAME}' with ${reused}" &
 telegram_fn "Starting GitHub actions runner: '${RUNNER_NAME}' with ${reused}" &
 
 # Cleanup and exit
-trap 'cleanup; exit 130' INT
-trap 'cleanup; exit 143' TERM
+trap 'echo "Caught INT signal"; cleanup; exit 130' INT
+trap 'echo "Caught TERM signal"; cleanup; exit 143' TERM
 
 # Start the runner
 "./${RUN_SCRIPT}" & wait $!
