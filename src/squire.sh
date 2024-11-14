@@ -40,8 +40,13 @@ latest_release_version() {
   echo "$refined"
 }
 
+# # Prints one character at a time
+# filler() {
+# 	for ((j=0; j<$(tput cols); j++)); do
+# 		printf '*'
+# 	done
+# }
+
 filler() {
-	for ((j=0; j<$(tput cols); j++)); do
-		printf '*'
-	done
+    printf '%*s\n' "$(tput cols)" '' | tr ' ' '*'
 }

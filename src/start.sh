@@ -64,8 +64,8 @@ echo ""
 if [[ -d "${ACTIONS_DIR}" ]] &&
    [[ -f "${ACTIONS_DIR}/.credentials" ]] &&
    [[ -f "${ACTIONS_DIR}/.credentials_rsaparams" ]] &&
-   [[ -f "${ACTIONS_DIR}/config.sh" ]] &&
-   [[ -f "${ACTIONS_DIR}/run.sh" ]]; then
+   [[ -f "${ACTIONS_DIR}/${CONFIG_SCRIPT}" ]] &&
+   [[ -f "${ACTIONS_DIR}/${RUN_SCRIPT}" ]]; then
      if [[ "$REUSE_EXISTING" == "true" || "$REUSE_EXISTING" == "1" ]]; then
         log "Existing configuration found. Re-using it..."
         reused="reusing existing configuration"
@@ -95,4 +95,4 @@ trap 'cleanup; exit 130' INT
 trap 'cleanup; exit 143' TERM
 
 # Start the runner
-./run.sh & wait $!
+"./${RUN_SCRIPT}" & wait $!

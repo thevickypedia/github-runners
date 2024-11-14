@@ -3,17 +3,18 @@
 download_artifact() {
   # Navigate to ACTIONS_DIR directory, download and extract the runner
   log "Downloading artifact [v${ARTIFACT_VERSION}] to '${ACTIONS_DIR}'"
-  mkdir -p "${ACTIONS_DIR}" && cd "${ACTIONS_DIR}" \
-  && curl -O -sL "${RELEASE_URL}/download/v${ARTIFACT_VERSION}/actions-runner-${TARGET_BIN}-${ARTIFACT_VERSION}.tar.gz" \
-  && tar xzf "./actions-runner-${TARGET_BIN}-${ARTIFACT_VERSION}.tar.gz"
+  mkdir -p "${ACTIONS_DIR}" && cd "${ACTIONS_DIR}"
+  curl -O -sL "${RELEASE_URL}/download/v${ARTIFACT_VERSION}/actions-runner-${TARGET_BIN}-${ARTIFACT_VERSION}.${EXTENSION}"
+  tar xzf "./actions-runner-${TARGET_BIN}-${ARTIFACT_VERSION}.${EXTENSION}"
 }
 
+# todo: runs in a never ending loop due to traps
 cleanup() {
   # Sends notification (when env vars are set) and removes the runner from local and GitHub
   log "Removing runner..."
   ntfy_fn "Removing runner: '${RUNNER_NAME}'"
   telegram_fn "Removing runner: '${RUNNER_NAME}'"
-  ./config.sh remove --token "${REG_TOKEN}"
+  "./${CONFIG_SCRIPT}" remove --token "${REG_TOKEN}"
 	# Kill all background jobs started by the script
 	kill 0 2>/dev/null || true
 }
@@ -26,7 +27,7 @@ repo_level_runner() {
         "https://api.github.com/repos/${GIT_OWNER}/${GIT_REPOSITORY}/actions/runners/registration-token" \
         | jq .token --raw-output)
     cd "$ACTIONS_DIR" || exit 1
-    ./config.sh --unattended \
+    "./${CONFIG_SCRIPT}" --unattended \
         --work "${WORK_DIR}" \
         --labels "${LABELS}" \
         --token "${REG_TOKEN}" \
@@ -45,7 +46,7 @@ org_level_runner() {
         "https://api.github.com/orgs/${GIT_OWNER}/actions/runners/registration-token" \
         | jq .token --raw-output)
     cd "$ACTIONS_DIR" || exit 1
-    ./config.sh \
+    "./${CONFIG_SCRIPT}" \
         --work "${WORK_DIR}" \
         --labels "${LABELS}" \
         --token "${REG_TOKEN}" \

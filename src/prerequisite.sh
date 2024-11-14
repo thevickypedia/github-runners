@@ -30,13 +30,18 @@ linux() {
   fi
 }
 
+export EXTENSION="tar.gz"
+export CONFIG_SCRIPT="config.sh"
+export RUN_SCRIPT="run.sh"
 if [[ "$OPERATING_SYSTEM" == "darwin" ]]; then
   darwin
-elif [[ "$OPERATING_SYSTEM" != "linux" ]]; then
+elif [[ "$OPERATING_SYSTEM" == "linux" ]]; then
   linux
 else
-  log "github-runners is only supported in macOS or Linux distros"
-  exit 1
+  # todo: Add windows validations
+  export EXTENSION="zip"
+  export CONFIG_SCRIPT="config.cmd"
+  export RUN_SCRIPT="run.cmd"
 fi
 
 log "Prerequisites verified for ${OPERATING_SYSTEM}-${ARCHITECTURE}"
