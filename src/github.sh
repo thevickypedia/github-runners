@@ -8,7 +8,6 @@ download_artifact() {
   tar xzf "./actions-runner-${TARGET_BIN}-${ARTIFACT_VERSION}.${EXTENSION}"
 }
 
-# todo: GH background tasks still keeps triggering after the start script finishes
 cleanup() {
   # Sends notification (when env vars are set) and removes the runner from local and GitHub
   log "Removing runner..."

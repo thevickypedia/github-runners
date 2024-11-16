@@ -48,5 +48,5 @@ latest_release_version() {
 # }
 
 filler() {
-    printf '%*s\n' "$(tput cols)" '' | tr ' ' '*'
+  printf '%*s\n' "$(tput cols)" '' | tr ' ' '*'
 }

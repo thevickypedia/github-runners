@@ -38,19 +38,15 @@ source "${current_dir}/notify.sh"
 # Default runner version is the latest release set by squire.sh
 export ARTIFACT_VERSION="${ARTIFACT_VERSION:-"$(latest_release_version)"}"
 
-# Download artifact
-download_artifact
-
 # Load env vars or set default values for RUNNER_NAME, RUNNER_GROUP, WORK_DIR and LABELS
 RUNNER_NAME="${RUNNER_NAME:-"$(instance_id)"}"
 RUNNER_GROUP="${RUNNER_GROUP:-"default"}"
 WORK_DIR="${WORK_DIR:-"_work"}"
 LABELS="${LABELS:-"${OPERATING_SYSTEM}-${ARCHITECTURE}"}"
-REUSE_EXISTING="${REUSE_EXISTING:-"false"}"
 
 # ************************************************ #
 filler
-prints=("Runner OS: '${OPERATING_SYSTEM}'" "Runner Architecture: '${ARCHITECTURE}'" "Runner Name: '${RUNNER_NAME}'" "Labels: '${LABELS}'" "Reuse flag: '${REUSE_EXISTING}'")
+prints=("Runner OS: '${OPERATING_SYSTEM}'" "Runner Architecture: '${ARCHITECTURE}'" "Runner Name: '${RUNNER_NAME}'" "Labels: '${LABELS}'")
 width=$(tput cols)
 for print in "${prints[@]}"; do
     len=${#print}
@@ -66,18 +62,13 @@ if [[ -d "${ACTIONS_DIR}" ]] &&
    [[ -f "${ACTIONS_DIR}/.credentials_rsaparams" ]] &&
    [[ -f "${ACTIONS_DIR}/${CONFIG_SCRIPT}" ]] &&
    [[ -f "${ACTIONS_DIR}/${RUN_SCRIPT}" ]]; then
-     if [[ "$REUSE_EXISTING" == "true" || "$REUSE_EXISTING" == "1" ]]; then
-        log "Existing configuration found. Re-using it..."
-        reused="reusing existing configuration"
-        cd "${ACTIONS_DIR}" || exit 1
-     else
-        filler
-        log "WARNING::Runner cannot start due to existing configuration present!!"
-        log "WARNING::Please cleanup existing '${ACTIONS_DIR}' manually or set 'REUSE_EXISTING=true'"
-        filler
-     fi
+  log "Existing configuration found. Re-using it..."
+  reused="reusing existing configuration"
+  cd "${ACTIONS_DIR}" || exit 1
 else
-  if [[ -n "$GIT_REPOSITORY" ]]; then
+  # Download artifact
+  download_artifact
+  if [[ -n "${GIT_REPOSITORY}" ]]; then
     log "Creating a repository level self-hosted runner ['${RUNNER_NAME}'] for ${GIT_REPOSITORY}"
     repo_level_runner
   else

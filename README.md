@@ -1,7 +1,11 @@
 # GitHub Runner (non-dockerized)
-Spin up an on-demand self-hosted GitHub action runner on any Unix like operating system.
+Spin up an on-demand self-hosted GitHub action runners on `Linux`, `macOS` or `Windows`** operating systems.
+
+> **`Windows` machines require [WSL] or [Git Bash] to be installed.
 
 ### Environment Variables
+
+> Automatically sources `.env` file in current working directory _(if available)_
 
 - **ARTIFACT_VERSION** - Runner version. Uses the latest version from [actions/runner].
 - **ACTIONS_DIR** - Directory where the runner has to be downloaded and configured. Uses the current working directory.
@@ -12,14 +16,11 @@ Spin up an on-demand self-hosted GitHub action runner on any Unix like operating
 - **RUNNER_NAME** - Runner name. Uses a random instance ID.
 - **WORK_DIR** - Work directory. Uses `_work`
 - **LABELS** - Runner labels (comma separated). Uses `"${os_name}-${architecture}"`
-- **REUSE_EXISTING** - Re-use existing configuration. Defaults to `false`
 
 > [!NOTE]
 > 
-> `REUSE_EXISTING` flag can be useful when the script stops due to an issue or
-> when the same config is reused after being terminated without shutting down gracefully.
 > <details>
-> <summary><strong>More info</strong></summary>
+> <summary><strong>Reusability</strong></summary>
 >
 > Following files/directories are created (commonly across `macOS`, `Linux` and `Windows` runners)
 > only when the runner has been configured 
@@ -103,6 +104,8 @@ Licensed under the [MIT License][license]
 [BotFather]: https://t.me/botfather
 [telegram-topics]: https://telegram.org/blog/topics-in-groups-collectible-usernames
 [telegram-threads]: https://core.telegram.org/api/threads
+[WSL]: https://learn.microsoft.com/en-us/windows/wsl/
+[Git Bash]: https://gitforwindows.org/
 
 [#restricting-the-use-of-self-hosted-runners]: https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/about-self-hosted-runners#restricting-the-use-of-self-hosted-runners
 [#self-hosted-runner-security]: https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/about-self-hosted-runners#self-hosted-runner-security
