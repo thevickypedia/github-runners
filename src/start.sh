@@ -17,9 +17,10 @@ source "${current_dir}/squire.sh"
 
 env_parser() {
   # Manual option parsing
+  # TODO: Include --verbose/-v flag
   while [[ $# -gt 0 ]]; do
     case "$1" in
-      -e|-E|--env)
+      -e|--env)
         if [[ -n "$2" && "$2" != -* ]]; then
           env_file="$2"
           shift 2
@@ -61,7 +62,9 @@ if [[ $# -eq 0 ]]; then
 else
   env_parser "$@"
 fi
-export ACTIONS_DIR="${ACTIONS_DIR:-${current_dir}/actions-runner}"
+# Normalize path
+actions_dir="${ACTIONS_DIR:-${current_dir}/actions-runner}"
+export ACTIONS_DIR="${actions_dir%/}"
 
 # Script for all GitHub related functions
 source "${current_dir}/github.sh"
@@ -82,7 +85,9 @@ export ARTIFACT_VERSION="${ARTIFACT_VERSION:-"$(latest_release_version)"}"
 # Load env vars or set default values for RUNNER_NAME, RUNNER_GROUP, WORK_DIR and LABELS
 RUNNER_NAME="${RUNNER_NAME:-"$(instance_id)"}"
 RUNNER_GROUP="${RUNNER_GROUP:-"default"}"
-WORK_DIR="${WORK_DIR:-"_work"}"
+# Normalize path
+work_dir="${WORK_DIR:-"_work"}"
+WORK_DIR="${WORK_DIR%/}"
 LABELS="${LABELS:-"${OPERATING_SYSTEM}-${ARCHITECTURE}"}"
 
 # ************************************************ #
