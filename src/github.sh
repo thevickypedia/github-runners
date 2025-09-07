@@ -4,7 +4,19 @@ download_artifact() {
   # Navigate to ACTIONS_DIR directory, download and extract the runner
   log "Downloading artifact [v${ARTIFACT_VERSION}] to '${ACTIONS_DIR}'"
   mkdir -p "${ACTIONS_DIR}" && cd "${ACTIONS_DIR}"
-  curl -O -sL "${RELEASE_URL}/download/v${ARTIFACT_VERSION}/actions-runner-${TARGET_BIN}-${ARTIFACT_VERSION}.${EXTENSION}"
+  # TODO: Implement re-using the same artifact (zipped)
+  if [[ "${SHOW_PROGRESS}" == "true" ]]; then
+    flag="-OL"
+  else
+    flag="-sOL"
+  fi
+  download_url="${RELEASE_URL}/download/v${ARTIFACT_VERSION}/actions-runner-${TARGET_BIN}-${ARTIFACT_VERSION}.${EXTENSION}"
+  log "Download link: ${download_url}"
+  start_time=$(date +%s)
+  curl "$flag" "${download_url}"
+  end=$(date +%s)
+  time_taken=$((end - start))
+  log "Downloaded artifact in ${time_taken} seconds"
   tar xzf "./actions-runner-${TARGET_BIN}-${ARTIFACT_VERSION}.${EXTENSION}"
 }
 
