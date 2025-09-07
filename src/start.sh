@@ -12,14 +12,51 @@ working_dir="$(pwd)"
 # Functions for log, instance_id, latest_release_version and cleanup
 source "${current_dir}/squire.sh"
 
+env_parser() {
+  # Manual option parsing
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      -e|-E|--env)
+        if [[ -n "$2" && "$2" != -* ]]; then
+          env_file="$2"
+          shift 2
+          if [[ -f "$env_file" ]]; then
+            log "Sourcing ${env_file}"
+            source "${env_file}"
+          else
+            log "Error: File does not exist -> $env_file"
+            exit 1
+          fi
+        else
+          log "Error: Argument expected for $1"
+          exit 1
+        fi
+        ;;
+      -h|--help)
+        log "Usage: $0 [-e|--env <path/to/file>]"
+        exit 0
+        ;;
+      *)
+        log "Unknown option: $1"
+        log "Use -h or --help for usage."
+        exit 1
+        ;;
+    esac
+  done
+}
+
 # Source env_file file
 ENV_FILE="${env_file:-${working_dir}/.env}"
 
-if [ -f "${ENV_FILE}" ]; then
-	log "Sourcing ${ENV_FILE}"
-	# ShellCheck directive to ignore non-constant source
-	# shellcheck source=${working_dir}/.env
-	source "${ENV_FILE}"
+if [[ $# -eq 0 ]]; then
+  if [ -f "${ENV_FILE}" ]; then
+    log "Sourcing ${ENV_FILE}"
+    # ShellCheck directive to ignore non-constant source
+    # shellcheck source=${working_dir}/.env
+    source "${ENV_FILE}"
+  fi
+else
+  env_parser "$@"
 fi
 export ACTIONS_DIR="${ACTIONS_DIR:-${current_dir}/actions-runner}"
 
@@ -67,6 +104,7 @@ if [[ -d "${ACTIONS_DIR}" ]] &&
   cd "${ACTIONS_DIR}" || exit 1
 else
   # Download artifact
+  export SHOW_PROGRESS="${SHOW_PROGRESS:-"false"}"
   download_artifact
   if [[ -n "${GIT_REPOSITORY}" ]]; then
     log "Creating a repository level self-hosted runner ['${RUNNER_NAME}'] for ${GIT_REPOSITORY}"
