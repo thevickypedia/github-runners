@@ -1,12 +1,15 @@
 #!/bin/bash
+# NOTE: This script should not be sourced
 # 'set -e' stops the execution of a script if a command or pipeline has an error.
 # This is the opposite of the default shell behaviour, which is to ignore errors in scripts.
 set -e
 
 export RELEASE_URL="https://github.com/actions/runner/releases"
 
-# Get current and working directory
-current_dir="$(dirname "$(realpath "$0")")"
+# Get current, parent and working directory
+script_path="$(realpath "$0")"
+current_dir="$(dirname "$script_path")"
+parent_dir="$(dirname "$current_dir")"
 working_dir="$(pwd)"
 
 # Functions for log, instance_id, latest_release_version and cleanup
@@ -67,6 +70,7 @@ source "${current_dir}/github.sh"
 source "${current_dir}/detector.sh"
 
 # Install the requirements
+# Sets EXTENSION, CONFIG_SCRIPT, RUN_SCRIPT
 source "${current_dir}/prerequisite.sh"
 
 # Script for all notification related functions

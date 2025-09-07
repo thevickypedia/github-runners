@@ -16,6 +16,7 @@ Spin up an on-demand self-hosted GitHub action runners on `Linux`, `macOS` or `W
 - **RUNNER_NAME** - Runner name. Uses a random instance ID.
 - **WORK_DIR** - Work directory. Uses `_work`
 - **LABELS** - Runner labels (comma separated). Uses `"${os_name}-${architecture}"`
+- **SHOW_PROGRESS** - Display the download progress. Defaults to `false`
 
 > [!NOTE]
 > 

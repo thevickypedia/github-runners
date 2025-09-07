@@ -1,23 +1,40 @@
 #!/bin/bash
 
 download_artifact() {
-  # Navigate to ACTIONS_DIR directory, download and extract the runner
+  # Navigate to ACTIONS_DIR directory, download (if not already available) and extract the runner
+  # Checks script's current and parent directory in addition to the user's working directory
   log "Downloading artifact [v${ARTIFACT_VERSION}] to '${ACTIONS_DIR}'"
-  mkdir -p "${ACTIONS_DIR}" && cd "${ACTIONS_DIR}"
-  # TODO: Implement re-using the same artifact (zipped)
-  if [[ "${SHOW_PROGRESS}" == "true" ]]; then
-    flag="-OL"
+  artifact_file="actions-runner-${TARGET_BIN}-${ARTIFACT_VERSION}.${EXTENSION}"
+  # TODO: Simplify this with an env var
+  if [[ -f "${current_dir}/${artifact_file}" ]]; then
+    artifact_path="${current_dir}/${artifact_file}"
+    log "Existing artifact found at: ${artifact_path}"
+  elif [[ -f "${parent_dir}/${artifact_file}" ]]; then
+    artifact_path="${parent_dir}/${artifact_file}"
+    log "Existing artifact found at: ${artifact_path}"
+  elif [[ -f "${working_dir}/${artifact_file}" ]]; then
+    artifact_path="${working_dir}/${artifact_file}"
+    log "Existing artifact found at: ${artifact_path}"
   else
-    flag="-sOL"
+    if [[ "${SHOW_PROGRESS}" == "true" ]]; then
+      flag="-OL"
+    else
+      flag="-sOL"
+    fi
+    download_url="${RELEASE_URL}/download/v${ARTIFACT_VERSION}/${artifact_file}"
+    log "Download link: ${download_url}"
+    start=$(date +%s)
+    curl "$flag" "${download_url}"
+    end=$(date +%s)
+    time_taken=$((end - start))
+    log "Downloaded artifact in ${time_taken} seconds"
+    artifact_path="${artifact_file}"
   fi
-  download_url="${RELEASE_URL}/download/v${ARTIFACT_VERSION}/actions-runner-${TARGET_BIN}-${ARTIFACT_VERSION}.${EXTENSION}"
-  log "Download link: ${download_url}"
-  start_time=$(date +%s)
-  curl "$flag" "${download_url}"
-  end=$(date +%s)
-  time_taken=$((end - start))
-  log "Downloaded artifact in ${time_taken} seconds"
-  tar xzf "./actions-runner-${TARGET_BIN}-${ARTIFACT_VERSION}.${EXTENSION}"
+  mkdir -p "${ACTIONS_DIR}" || { log "Failed to create ${ACTIONS_DIR}"; return 1; }
+  cp "${artifact_path}" "${ACTIONS_DIR}" || { log "Failed to copy ${artifact_file} to ${ACTIONS_DIR}"; return 1; }
+  cd "${ACTIONS_DIR}" || { log "Unable to cd into ${ACTIONS_DIR}"; return 1; }
+  log "Extracting ${artifact_file} ..."
+  tar xzf "./${artifact_file}" || { log "Failed to extract ${ACTIONS_DIR}"; return 1; }
 }
 
 cleanup() {
