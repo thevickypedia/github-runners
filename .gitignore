@@ -2,8 +2,7 @@
 .vscode/
 .DS_Store
 
-logs/
-
 # Arbitrary values
 *.env
 *actions-runner*
+*.log

@@ -69,6 +69,7 @@ if [[ $# -eq 0 ]]; then
 else
   arg_parser "$@"
 fi
+
 # Normalize path
 actions_dir="${ACTIONS_DIR:-${current_dir}/actions-runner}"
 export ACTIONS_DIR="${actions_dir%/}"
@@ -100,7 +101,11 @@ LABELS="${LABELS:-"${OPERATING_SYSTEM}-${ARCHITECTURE}"}"
 # ************************************************ #
 filler
 prints=("Runner OS: '${OPERATING_SYSTEM}'" "Runner Architecture: '${ARCHITECTURE}'" "Runner Name: '${RUNNER_NAME}'" "Labels: '${LABELS}'")
-width=$(tput cols)
+if [[ -t 1 && -n "$TERM" ]]; then
+  width=$(tput cols)
+else
+  width=80
+fi
 for print in "${prints[@]}"; do
     len=${#print}
     padding=$(( (width - len) / 2 ))

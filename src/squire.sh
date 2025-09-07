@@ -43,5 +43,11 @@ latest_release_version() {
 # }
 
 filler() {
-  printf '%*s\n' "$(tput cols)" '' | tr ' ' '*'
+  local width
+  if [[ -t 1 && -n "$TERM" ]]; then
+    width=$(tput cols)
+  else
+    width=80
+  fi
+  printf '%*s\n' "$width" '' | tr ' ' '*'
 }
