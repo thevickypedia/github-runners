@@ -47,7 +47,7 @@ filler() {
   if [[ -t 1 && -n "$TERM" ]]; then
     width=$(tput cols)
   else
-    width=80
+    width=120
   fi
   printf '%*s\n' "$width" '' | tr ' ' '*'
 }

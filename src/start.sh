@@ -104,7 +104,7 @@ prints=("Runner OS: '${OPERATING_SYSTEM}'" "Runner Architecture: '${ARCHITECTURE
 if [[ -t 1 && -n "$TERM" ]]; then
   width=$(tput cols)
 else
-  width=80
+  width=120
 fi
 for print in "${prints[@]}"; do
     len=${#print}
