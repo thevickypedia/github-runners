@@ -70,6 +70,15 @@ else
   arg_parser "$@"
 fi
 
+# Check mandatory flags required to spin up actions
+if [[ -z "${GIT_REPOSITORY}" && -z "${GIT_OWNER}" ]]; then
+  error "Environment variable missing: Please set either GIT_REPOSITORY or GIT_OWNER"
+fi
+
+if [[ -z "${GIT_TOKEN}" ]]; then
+  error "Environment variable missing: GIT_TOKEN is required for authentication"
+fi
+
 # Normalize path
 actions_dir="${ACTIONS_DIR:-${current_dir}/actions-runner}"
 export ACTIONS_DIR="${actions_dir%/}"
