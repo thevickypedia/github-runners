@@ -5,7 +5,6 @@ download_artifact() {
   # Checks script's current and parent directory in addition to the user's working directory
   log "Downloading artifact [v${ARTIFACT_VERSION}] to '${ACTIONS_DIR}'"
   artifact_file="actions-runner-${TARGET_BIN}-${ARTIFACT_VERSION}.${EXTENSION}"
-  # TODO: Simplify this with an env var
   if [[ -f "${current_dir}/${artifact_file}" ]]; then
     artifact_path="${current_dir}/${artifact_file}"
     log "Existing artifact found at: ${artifact_path}"
@@ -35,6 +34,8 @@ download_artifact() {
   cd "${ACTIONS_DIR}" || { log "Unable to cd into ${ACTIONS_DIR}"; return 1; }
   log "Extracting ${artifact_file} ..."
   tar xzf "./${artifact_file}" || { log "Failed to extract ${ACTIONS_DIR}"; return 1; }
+  log "Completed extraction, removing the copy of raw artifact"
+  rm -f "${ACTIONS_DIR}/${artifact_file}"
 }
 
 cleanup() {
