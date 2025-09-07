@@ -18,9 +18,9 @@ ntfy_fn() {
               "${NTFY_URL}/${NTFY_TOPIC}")
     status_code="${response: -3}"
     if [ "${status_code}" -eq 200 ]; then
-      log "Ntfy notification was successful"
+      info "Ntfy notification was successful"
     elif [[ -f "/tmp/ntfy" ]]; then
-      log "Failed to send ntfy notification"
+      info "Failed to send ntfy notification"
       response_payload="$(cat /tmp/ntfy)"
       reason=$(echo "$response_payload" | jq '.error')
       # echo "${response_payload}" | jq empty > /dev/null 2>&1
@@ -31,16 +31,16 @@ ntfy_fn() {
       # fi
       # Output the extracted description or the full response if jq fails
       if [ "${reason}" != "null" ]; then
-          log "[${status_code}]: ${reason}"
+          info "[${status_code}]: ${reason}"
       else
-          log "[${status_code}]: $(cat /tmp/ntfy)"
+          info "[${status_code}]: $(cat /tmp/ntfy)"
       fi
     else
-      log "Failed to send ntfy notification - ${status_code}"
+      info "Failed to send ntfy notification - ${status_code}"
     fi
     rm -f /tmp/ntfy
   else
-    log "Ntfy notifications is not setup"
+    info "Ntfy notifications is not setup"
   fi
 }
 
@@ -76,22 +76,22 @@ telegram_fn() {
               "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage")
     status_code="${response: -3}"
     if [ "$status_code" -eq 200 ]; then
-      log "Telegram notification was successful"
+      info "Telegram notification was successful"
     elif [[ -f "/tmp/telegram" ]]; then
-      log "Failed to send telegram notification"
+      info "Failed to send telegram notification"
       response_payload="$(cat /tmp/telegram)"
       reason=$(echo "${response_payload}" | jq '.description')
       # Output the extracted description or the full response if jq fails
       if [ "${reason}" != "null" ]; then
-          log "[${status_code}]: ${reason}"
+          info "[${status_code}]: ${reason}"
       else
-          log "[${status_code}]: $(cat /tmp/telegram)"
+          info "[${status_code}]: $(cat /tmp/telegram)"
       fi
     else
-      log "Failed to send telegram notification - ${status_code}"
+      info "Failed to send telegram notification - ${status_code}"
     fi
     rm -f /tmp/telegram
   else
-    log "Telegram notifications is not setup"
+    info "Telegram notifications is not setup"
   fi
 }

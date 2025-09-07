@@ -1,8 +1,3 @@
-log() {
-  dt_stamp=$(date -u +"%Y-%m-%d %H:%M:%SZ")
-  echo "${dt_stamp}: $1"
-}
-
 instance_id() {
   # Use randomly generated instance IDs (AWS format) as default runner names
   # Set to a UTF-8 compatible locale if possible

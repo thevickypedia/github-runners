@@ -3,44 +3,44 @@
 download_artifact() {
   # Navigate to ACTIONS_DIR directory, download (if not already available) and extract the runner
   # Checks script's current and parent directory in addition to the user's working directory
-  log "Downloading artifact [v${ARTIFACT_VERSION}] to '${ACTIONS_DIR}'"
   artifact_file="actions-runner-${TARGET_BIN}-${ARTIFACT_VERSION}.${EXTENSION}"
   if [[ -f "${current_dir}/${artifact_file}" ]]; then
     artifact_path="${current_dir}/${artifact_file}"
-    log "Existing artifact found at: ${artifact_path}"
+    info "Existing artifact found at: ${artifact_path}"
   elif [[ -f "${parent_dir}/${artifact_file}" ]]; then
     artifact_path="${parent_dir}/${artifact_file}"
-    log "Existing artifact found at: ${artifact_path}"
+    info "Existing artifact found at: ${artifact_path}"
   elif [[ -f "${working_dir}/${artifact_file}" ]]; then
     artifact_path="${working_dir}/${artifact_file}"
-    log "Existing artifact found at: ${artifact_path}"
+    info "Existing artifact found at: ${artifact_path}"
   else
-    if [[ "${SHOW_PROGRESS}" == "true" ]]; then
+    info "Downloading artifact [v${ARTIFACT_VERSION}] to '${ACTIONS_DIR}'"
+    if [[ "${VERBOSE}" == "true" ]]; then
       flag="-OL"
     else
       flag="-sOL"
     fi
     download_url="${RELEASE_URL}/download/v${ARTIFACT_VERSION}/${artifact_file}"
-    log "Download link: ${download_url}"
+    debug "Download link: ${download_url}"
     start=$(date +%s)
     curl "$flag" "${download_url}"
     end=$(date +%s)
     time_taken=$((end - start))
-    log "Downloaded artifact in ${time_taken} seconds"
+    debug "Downloaded artifact in ${time_taken} seconds"
     artifact_path="${artifact_file}"
   fi
-  mkdir -p "${ACTIONS_DIR}" || { log "Failed to create ${ACTIONS_DIR}"; return 1; }
-  cp "${artifact_path}" "${ACTIONS_DIR}" || { log "Failed to copy ${artifact_file} to ${ACTIONS_DIR}"; return 1; }
-  cd "${ACTIONS_DIR}" || { log "Unable to cd into ${ACTIONS_DIR}"; return 1; }
-  log "Extracting ${artifact_file} ..."
-  tar xzf "./${artifact_file}" || { log "Failed to extract ${ACTIONS_DIR}"; return 1; }
-  log "Completed extraction, removing the copy of raw artifact"
+  mkdir -p "${ACTIONS_DIR}" || { error "Failed to create ${ACTIONS_DIR}"; }
+  cp "${artifact_path}" "${ACTIONS_DIR}" || { error "Failed to copy ${artifact_file} to ${ACTIONS_DIR}"; }
+  cd "${ACTIONS_DIR}" || { error "Unable to cd into ${ACTIONS_DIR}"; }
+  info "Extracting ${artifact_file} ..."
+  tar xzf "./${artifact_file}" || { error "Failed to extract ${ACTIONS_DIR}"; }
+  debug "Completed extraction, removing the copy of raw artifact"
   rm -f "${ACTIONS_DIR}/${artifact_file}"
 }
 
 cleanup() {
   # Sends notification (when env vars are set) and removes the runner from local and GitHub
-  log "Removing runner..."
+  info "Removing runner..."
   ntfy_fn "Removing runner: '${RUNNER_NAME}'"
   telegram_fn "Removing runner: '${RUNNER_NAME}'"
   "./${CONFIG_SCRIPT}" remove --token "${REG_TOKEN}"

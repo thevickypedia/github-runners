@@ -12,12 +12,15 @@ current_dir="$(dirname "$script_path")"
 parent_dir="$(dirname "$current_dir")"
 working_dir="$(pwd)"
 
-# Functions for log, instance_id, latest_release_version and cleanup
+# Functions for instance_id, latest_release_version and cleanup
 source "${current_dir}/squire.sh"
 
-env_parser() {
+# Functions for logging
+unset VERBOSE
+source "${current_dir}/log.sh"
+
+arg_parser() {
   # Manual option parsing
-  # TODO: Include --verbose/-v flag
   while [[ $# -gt 0 ]]; do
     case "$1" in
       -e|--env)
@@ -25,25 +28,29 @@ env_parser() {
           env_file="$2"
           shift 2
           if [[ -f "$env_file" ]]; then
-            log "Sourcing ${env_file}"
+            info "Sourcing ${env_file}"
             source "${env_file}"
           else
-            log "Error: File does not exist -> $env_file"
-            exit 1
+            error "File does not exist -> $env_file"
           fi
         else
-          log "Error: Argument expected for $1"
-          exit 1
+          error "Argument expected for $1"
         fi
         ;;
+      -v|--verbose)
+        export VERBOSE="true"
+        # Re-source log script
+        source "${current_dir}/log.sh"
+        debug "Verbose mode enabled"
+        shift
+        ;;
       -h|--help)
-        log "Usage: $0 [-e|--env <path/to/file>]"
+        info "Usage: $0 [-e|--env <path/to/file>]"
         exit 0
         ;;
       *)
-        log "Unknown option: $1"
-        log "Use -h or --help for usage."
-        exit 1
+        warn "Use -h or --help for usage."
+        error "Unknown option: $1"
         ;;
     esac
   done
@@ -54,13 +61,13 @@ ENV_FILE="${env_file:-${working_dir}/.env}"
 
 if [[ $# -eq 0 ]]; then
   if [ -f "${ENV_FILE}" ]; then
-    log "Sourcing ${ENV_FILE}"
+    info "Sourcing ${ENV_FILE}"
     # ShellCheck directive to ignore non-constant source
     # shellcheck source=${working_dir}/.env
     source "${ENV_FILE}"
   fi
 else
-  env_parser "$@"
+  arg_parser "$@"
 fi
 # Normalize path
 actions_dir="${ACTIONS_DIR:-${current_dir}/actions-runner}"
@@ -108,18 +115,17 @@ if [[ -d "${ACTIONS_DIR}" ]] &&
    [[ -f "${ACTIONS_DIR}/.credentials_rsaparams" ]] &&
    [[ -f "${ACTIONS_DIR}/${CONFIG_SCRIPT}" ]] &&
    [[ -f "${ACTIONS_DIR}/${RUN_SCRIPT}" ]]; then
-  log "Existing configuration found. Re-using it..."
+  info "Existing configuration found. Re-using it..."
   reused="reusing existing configuration"
   cd "${ACTIONS_DIR}" || exit 1
 else
   # Download artifact
-  export SHOW_PROGRESS="${SHOW_PROGRESS:-"false"}"
   download_artifact
   if [[ -n "${GIT_REPOSITORY}" ]]; then
-    log "Creating a repository level self-hosted runner ['${RUNNER_NAME}'] for ${GIT_REPOSITORY}"
+    info "Creating a repository level self-hosted runner ['${RUNNER_NAME}'] for ${GIT_REPOSITORY}"
     repo_level_runner
   else
-    log "Creating an organization level self-hosted runner '${RUNNER_NAME}'"
+    info "Creating an organization level self-hosted runner '${RUNNER_NAME}'"
     org_level_runner
   fi
   reused="creating a new configuration"

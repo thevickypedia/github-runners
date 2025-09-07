@@ -1,7 +1,7 @@
 brew_check() {
   # Looks for brew installation and installs only if brew is not found
   if ! [ -x "$(command -v brew)" ]; then
-    log "Installing Homebrew"
+    info "Installing Homebrew"
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
   fi
 }
@@ -9,39 +9,39 @@ brew_check() {
 darwin() {
   if ! [ -x "$(command -v jq)" ]; then
     brew_check
-    log "Installing JQ"
+    info "Installing JQ"
     brew install jq
   fi
   if ! [ -x "$(command -v curl)" ]; then
     brew_check
-    log "Installing Curl"
+    info "Installing Curl"
     brew install curl
   fi
   if ! [ -x "$(command -v realpath)" ]; then
     brew_check
-    log "Installing coreutils"
+    info "Installing coreutils"
     brew install coreutils
   fi
 }
 
 linux() {
   if ! [ -x "$(command -v jq)" ]; then
-    log "Installing JQ"
+    info "Installing JQ"
     sudo apt-get install jq
   fi
   if ! [ -x "$(command -v curl)" ]; then
-    log "Installing Curl"
+    info "Installing Curl"
     sudo apt-get install curl
   fi
 }
 
 windows() {
   if ! [ -x "$(command -v jq)" ]; then
-    log "Installing JQ"
+    info "Installing JQ"
     winget install jqlang.jq
   fi
   if ! [ -x "$(command -v curl)" ]; then
-    log "Installing Curl"
+    info "Installing Curl"
     winget install curl.curl
   fi
 }
@@ -59,8 +59,8 @@ elif [[ "${OPERATING_SYSTEM}" == "windows" ]]; then
   export CONFIG_SCRIPT="config.cmd"
   export RUN_SCRIPT="run.cmd"
 else
-  log "Unknown operating system: ${OPERATING_SYSTEM}"
+  info "Unknown operating system: ${OPERATING_SYSTEM}"
   exit 1
 fi
 
-log "Prerequisites verified for ${OPERATING_SYSTEM}-${ARCHITECTURE}"
+info "Prerequisites verified for ${OPERATING_SYSTEM}-${ARCHITECTURE}"
