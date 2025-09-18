@@ -22,6 +22,11 @@ darwin() {
     info "Installing coreutils"
     brew install coreutils
   fi
+  if ! [ -x "$(command -v gh)" ]; then
+    brew_check
+    info "Installing gh"
+    brew install gh
+  fi
 }
 
 linux() {
@@ -33,6 +38,10 @@ linux() {
     info "Installing Curl"
     sudo apt-get install curl
   fi
+  if ! [ -x "$(command -v gh)" ]; then
+    info "Installing gh"
+    sudo apt-get install gh
+  fi
 }
 
 windows() {
@@ -43,6 +52,10 @@ windows() {
   if ! [ -x "$(command -v curl)" ]; then
     info "Installing Curl"
     winget install curl.curl
+  fi
+  if ! [ -x "$(command -v gh)" ]; then
+    info "Installing gh"
+    winget install GitHub.cli
   fi
 }
 
