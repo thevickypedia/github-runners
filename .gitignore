@@ -6,3 +6,4 @@
 *.env
 *actions-runner*
 *.log
+actions/

@@ -7,7 +7,6 @@ Spin up an on-demand self-hosted GitHub action runners on `Linux`, `macOS` or `W
 
 > Automatically sources `.env` file in current working directory _(if available)_
 
-- **ARTIFACT_VERSION** - Runner version. Uses the latest version from [actions/runner].
 - **ACTIONS_DIR** - Directory where the runner has to be downloaded and configured. Uses the current working directory.
 - **GIT_TOKEN** - Required for authentication to add runners.
 - **GIT_OWNER** - GitHub account username [OR] organization name.

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-NOTIFICATION_TITLE="GitHub Actions Runner - ${OPERATING_SYSTEM}-${ARCHITECTURE}"
+NOTIFICATION_TITLE="GitHub Actions Runner - ${CURRENT_PLATFORM}-${CPU_NAME}"
 
 ntfy_fn() {
   # Send NTFY notification

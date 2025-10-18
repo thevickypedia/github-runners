@@ -86,7 +86,7 @@ export ACTIONS_DIR="${actions_dir%/}"
 # Script for all GitHub related functions
 source "${current_dir}/github.sh"
 
-# Sets OPERATING_SYSTEM, ARCHITECTURE, TARGET_BIN
+# Sets CURRENT_PLATFORM, CPU_NAME, TARGET_BIN
 source "${current_dir}/detector.sh"
 
 # Install the requirements
@@ -96,8 +96,8 @@ source "${current_dir}/prerequisite.sh"
 # Script for all notification related functions
 source "${current_dir}/notify.sh"
 
-# Default runner version is the latest release set by squire.sh
-export ARTIFACT_VERSION="${ARTIFACT_VERSION:-"$(latest_release_version)"}"
+# Script for downloading the actions image
+source "${current_dir}/download.sh"
 
 # Load env vars or set default values for RUNNER_NAME, RUNNER_GROUP, WORK_DIR and LABELS
 RUNNER_NAME="${RUNNER_NAME:-"$(instance_id)"}"
@@ -105,11 +105,17 @@ RUNNER_GROUP="${RUNNER_GROUP:-"default"}"
 # Normalize path
 work_dir="${WORK_DIR:-"_work"}"
 WORK_DIR="${WORK_DIR%/}"
-LABELS="${LABELS:-"${OPERATING_SYSTEM}-${ARCHITECTURE}"}"
+LABELS="${LABELS:-"${CURRENT_PLATFORM},${CPU_NAME}"}"
+REUSE_EXISTING="${REUSE_EXISTING:-"false"}"
+
+# If not latest runner, download it
+if ! latest_runner; then
+  REUSE_EXISTING="false"
+fi
 
 # ************************************************ #
 filler
-prints=("Runner OS: '${OPERATING_SYSTEM}'" "Runner Architecture: '${ARCHITECTURE}'" "Runner Name: '${RUNNER_NAME}'" "Labels: '${LABELS}'")
+prints=("CURRENT_PLATFORM: '${CURRENT_PLATFORM}'" "CPU_NAME: '${CPU_NAME}'" "Runner Name: '${RUNNER_NAME}'" "Labels: '${LABELS}'")
 if [[ -t 1 && -n "$TERM" ]]; then
   width=$(tput cols)
 else
@@ -124,7 +130,8 @@ filler
 echo ""
 # ************************************************ #
 
-if [[ -d "${ACTIONS_DIR}" ]] &&
+if [[ "$REUSE_EXISTING" == "true" || "$REUSE_EXISTING" == "1" ]] &&
+   [[ -d "${ACTIONS_DIR}" ]] &&
    [[ -f "${ACTIONS_DIR}/.credentials" ]] &&
    [[ -f "${ACTIONS_DIR}/.credentials_rsaparams" ]] &&
    [[ -f "${ACTIONS_DIR}/${CONFIG_SCRIPT}" ]] &&
@@ -135,6 +142,7 @@ if [[ -d "${ACTIONS_DIR}" ]] &&
 else
   # Download artifact
   download_artifact
+  cd "$ACTIONS_DIR" || { error "Unable to cd into ${ACTIONS_DIR}"; }
   if [[ -n "${GIT_REPOSITORY}" ]]; then
     info "Creating a repository level self-hosted runner ['${RUNNER_NAME}'] for ${GIT_REPOSITORY}"
     repo_level_runner

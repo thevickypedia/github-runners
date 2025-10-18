@@ -7,6 +7,7 @@ brew_check() {
 }
 
 darwin() {
+  export HOMEBREW_NO_AUTO_UPDATE=1
   if ! [ -x "$(command -v jq)" ]; then
     brew_check
     info "Installing JQ"
@@ -62,18 +63,18 @@ windows() {
 export EXTENSION="tar.gz"
 export CONFIG_SCRIPT="config.sh"
 export RUN_SCRIPT="run.sh"
-if [[ "${OPERATING_SYSTEM}" == "darwin" ]]; then
+if [[ "${CURRENT_PLATFORM}" == "darwin" ]]; then
   darwin
-elif [[ "${OPERATING_SYSTEM}" == "linux" ]]; then
+elif [[ "${CURRENT_PLATFORM}" == "linux" ]]; then
   linux
-elif [[ "${OPERATING_SYSTEM}" == "windows" ]]; then
+elif [[ "${CURRENT_PLATFORM}" == "windows" ]]; then
   windows
   export EXTENSION="zip"
   export CONFIG_SCRIPT="config.cmd"
   export RUN_SCRIPT="run.cmd"
 else
-  info "Unknown operating system: ${OPERATING_SYSTEM}"
+  info "Unknown operating system: ${CURRENT_PLATFORM}"
   exit 1
 fi
 
-info "Prerequisites verified for ${OPERATING_SYSTEM}-${ARCHITECTURE}"
+info "Prerequisites verified for ${CURRENT_PLATFORM}-${CPU_NAME}"
