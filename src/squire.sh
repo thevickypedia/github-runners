@@ -1,38 +1,29 @@
 instance_id() {
-  # Use randomly generated instance IDs (AWS format) as default runner names
-  # Set to a UTF-8 compatible locale if possible
-  export LC_ALL=C.UTF-8
+  # Use randomly generated instance IDs without /dev/urandom (AWS format) as default runner names
+  chars=({a..z})
+  digits=({0..9})
+  id_parts=()
 
-  # Attempt to generate random letters and digits
-  if command -v pwgen &>/dev/null; then
-    random_string=$(pwgen -A 4 1)
-    random_digits=$(pwgen -0 12 1)
-  elif [[ -e /dev/urandom ]]; then
-  	random_string=$(tr -dc '[:lower:]' < /dev/urandom | head -c 4)
-  	random_digits=$(tr -dc '0-9' < /dev/urandom | head -c 12)
-  else
-    # Fallback to Python for random generation
-    random_string=$(python3 -c "import random, string; print(''.join(random.choices(string.ascii_lowercase, k=4)))")
-    random_digits=$(python3 -c "import random; print(''.join(random.choices('0123456789', k=12)))")
-  fi
+  # Add 4 random lowercase letters
+  for _ in {1..4}; do
+    id_parts+=("${chars[RANDOM % ${#chars[@]}]}")
+  done
 
-  # Combine letters and digits
-  eid="$random_string$random_digits"
+  # Add 12 random digits
+  for _ in {1..12}; do
+    id_parts+=("${digits[RANDOM % ${#digits[@]}]}")
+  done
 
-  # Shuffle the combined string
-  if command -v shuf &>/dev/null; then
-    shuffled_eid=$(echo "$eid" | fold -w1 | shuf | tr -d '\n')
-  else
-    # Fallback to sorting for shuffling
-    shuffled_eid=$(echo "$eid" | fold -w1 | sort -R | tr -d '\n')
-  fi
-  echo "i-0$shuffled_eid"
-}
+  # Shuffle the array manually
+  for ((i = ${#id_parts[@]} - 1; i > 0; i--)); do
+    j=$((RANDOM % (i + 1)))
+    tmp=${id_parts[i]}
+    id_parts[i]=${id_parts[j]}
+    id_parts[j]=$tmp
+  done
 
-latest_release_version() {
-  version=$(curl -s https://api.github.com/repos/actions/runner/releases/latest | jq -r .tag_name)
-  refined="${version#v}"
-  echo "$refined"
+  eid=$(IFS=; echo "${id_parts[*]}")
+  echo "i-0$eid"
 }
 
 # # Prints one character at a time
