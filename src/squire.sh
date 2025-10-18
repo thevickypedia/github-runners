@@ -1,3 +1,5 @@
+#!/bin/bash
+
 instance_id() {
   # Use randomly generated instance IDs without /dev/urandom (AWS format) as default runner names
   chars=({a..z})

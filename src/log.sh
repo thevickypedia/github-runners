@@ -1,3 +1,5 @@
+#!/bin/bash
+
 debug() {
   if [[ "${VERBOSE}" == "true" ]]; then
     dt_stamp=$(date -u +"%Y-%m-%d %H:%M:%SZ")

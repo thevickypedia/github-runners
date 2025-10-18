@@ -3,9 +3,7 @@
 download_artifact() {
   # Navigate to ACTIONS_DIR directory, download (if not already available) and extract the runner
   # Checks script's current and parent directory in addition to the user's working directory
-
-  # TODO: Check latest version here or move come components to latest_version func!!
-
+  # Constrct the artifact filename with the latest version, so it auto downloads when not found (ignoring any older ones)
   artifact_file="actions-runner-${RUNTIME_ID}-${RUNNER_VERSION}.${EXTENSION}"
   if [[ -f "${current_dir}/${artifact_file}" ]]; then
     artifact_path="${current_dir}/${artifact_file}"

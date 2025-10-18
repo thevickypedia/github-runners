@@ -1,3 +1,5 @@
+#!/bin/bash
+
 brew_check() {
   # Looks for brew installation and installs only if brew is not found
   if ! [ -x "$(command -v brew)" ]; then
